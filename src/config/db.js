@@ -48,7 +48,7 @@ async function connectRedis(retries = 5, delay = 5000) {
         redisClient = redis.createClient({ url: config.redis.uri });
 
         redisClient.on('connect', () => {
-            console.log('✅ Connexion à Redis réussie');
+            console.log(' Connexion à Redis réussie');
             resolve(redisClient);
         });
 
