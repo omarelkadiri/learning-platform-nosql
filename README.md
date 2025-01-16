@@ -86,3 +86,8 @@
    - Eviter les clés trop générales : Soyez spécifique dans le choix des clés pour éviter les conflits.
    - Surveiller les doublons : Assurez-vous qu’il n’y a pas de doublons pour éviter la surcharge du cache.
    - Expiration et nettoyage des clés : Définissez des expirations et nettoyez régulièrement les clés obsolètes.
+
+
+   ## installation : 
+      - Installation du driver MongoDB
+         npm install mongoose dotenv

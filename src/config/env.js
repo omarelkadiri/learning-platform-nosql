@@ -13,9 +13,14 @@ const requiredEnvVars = [
 ];
 
 // Validation des variables d'environnement
+  // Affiche une erreur et arrête le processus si une variable est manquante.
 function validateEnv() {
-  // TODO: Implémenter la validation
-  // Si une variable manque, lever une erreur explicative
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+  if (missingVars.length > 0) {
+    console.error(` Erreur : Les variables d'environnement suivantes sont manquantes : ${missingVars.join(', ')}`);
+    process.exit(1); // Stoppe l'exécution du programme
+  }
 }
 
 module.exports = {
