@@ -1,4 +1,118 @@
-## Réponses aux Questions
+# README.md – API de Gestion des Cours et Étudiants
+
+
+## Description
+Cette API permet la gestion des cours et des étudiants avec une relation **plusieurs-à-plusieurs**.  
+Elle inclut des fonctionnalités telles que :
+- **Création, mise à jour et suppression** de cours et d'étudiants.
+- **Inscription des étudiants** aux cours.
+- **Récupération des cours d’un étudiant**.
+- **Optimisation des performances** avec un système de **caching Redis**.
+
+---
+
+##  Technologies Utilisées
+- **Node.js** & **Express.js** – Framework backend
+- **MongoDB** – Base de données NoSQL
+- **Mongoose** – ODM pour MongoDB
+- **Redis** – Cache pour améliorer les performances
+- **Postman** – Test des endpoints API
+
+---
+
+##  Installation et Configuration
+
+### 1️.**Prérequis**
+- Node.js (>= 16.x)
+- MongoDB (local ou cloud)
+- Redis (local ou Docker)
+- Un gestionnaire de packages : `npm` ou `yarn`
+
+### 2️. **Installation**
+- Cloner le projet :
+   git clone https://github.com/omarelkadiri/learning-platform-nosql
+   cd learning-platform-nosql
+
+- Installer les dépendances :
+   npm install
+
+- Configurer les variables d’environnement (.env) :
+   PORT=3000
+   MONGO_URI=mongodb://localhost:27017/gestion-cours
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+
+- Démarrage :
+   Lancer MongoDB : 
+      - Debian : sudo mongod --config /etc/mongod.conf ou sudo systemctl start mongod
+      - Windows : cd C:\Program Files\MongoDB\Server\5.0\bin; mongod --dbpath C:\data\db
+   
+   Lancer Redis : 
+      - Debian : la commande bash : redis-server
+      - Windows : cd C:\Program Files\Redis\64\bin; redis-server --daemonize yes
+   
+   
+   --> Démarer l'API :  npm start
+      Si tu utilises Docker, lance directement :  docker-compose up -d
+
+
+   ## Endpoints Principaux
+
+   ***** Cours
+   Méthode	Endpoint	          Description
+   POST	   /courses	          Ajouter un cours
+   GET	   /courses/:id       Récupérer un cours spécifique
+   GET	   /courses	          Récupérer tous les cours
+   PUT	   /courses/:id	    Modifier un cours
+   DELETE	/courses/:id	    Supprimer un cours
+
+   ***** Étudiants
+   Méthode	Endpoint    	   Description
+   POST	   /students	      Ajouter un étudiant
+   GET	   /students/:id	   Récupérer un étudiant spécifique
+   GET	   /students	      Récupérer tous les étudiants
+   PUT	   /students/:id	   Modifier un étudiant
+   DELETE	/students/:id	   Supprimer un étudiant
+
+   ***** Inscription des Étudiants aux Cours
+   Méthode	Endpoint	            Description
+   POST	   /enrollments	      Inscrire un étudiant à un cours
+   GET	   /students/:studentId/courses	Récupérer les cours d’un étudiant
+   DELETE	/enrollments/:id	   Désinscrire un étudiant d’un cours
+
+## Gestion du Cache avec Redis
+
++ Pour améliorer la performance, cette API utilise Redis comme cache :
+
+   - Lorsqu’un cours ou un étudiant est récupéré, il est stocké en cache.
+   - Après modification ou suppression d’une donnée, le cache correspondant est supprimé ou modifié (selon le besoin) pour éviter les incohérences.
+
++ Résumé des approches pour la gestion du cache après modification :
+
+   1️. Mettre à jour le cache directement après modification
+
+      Avantages :
+      ✔️ Évite une requête MongoDB après la mise à jour.
+      ✔️ Assure que les nouvelles données sont immédiatement disponibles.
+      Inconvénients :
+      ❌ Nécessite de trouver et modifier chaque entrée en cache concernée.
+      ❌ Peut devenir complexe avec plusieurs caches pour des données similaires (ex: liste et détails d’un même objet).
+
+   2️. Supprimer le cache après modification
+
+      Avantages :
+      ✔️ Plus simple et plus facile à gérer.
+      ✔️ Lors de la prochaine requête, MongoDB sera sollicité et les données seront automatiquement rafraîchies.
+      Inconvénients :
+      ❌ La prochaine requête sera plus lente (requête MongoDB).
+      ❌ Si plusieurs utilisateurs requêtent après la suppression du cache, MongoDB sera interrogé avant que le cache ne soit recréé.
+
+   --> Quelle approche choisir ?
+
+      - Si on modifie un seul élément spécifique, mettre à jour directement le cache est préférable.
+      - Si la modification peut affecter plusieurs données (ex: une liste de cours, des stats, etc.), il vaut mieux supprimer le cache pour éviter des incohérences. 
+
+# Réponses aux Questions
 1. Pourquoi créer un module séparé pour les connexions aux bases de données ?
 
    - Réutilisabilité : Réduit la duplication de code.
@@ -88,16 +202,14 @@
    - Expiration et nettoyage des clés : Définissez des expirations et nettoyez régulièrement les clés obsolètes.
 
 
-   ## installation : 
-      - Installation du driver MongoDB
-         npm install mongoose dotenv
+
+## Captures d'écran des Tests :
 
 Test 1 : Connection Mongodb et Redis :
 ![alt text](image-4.png)
 
 Test 2 :  MongoService :
 ![alt text](image-1.png)
-
 
 Test 3 : courseController et courseRoutes :
 - test get 
@@ -109,28 +221,3 @@ Test 3 : courseController et courseRoutes :
 - Test 4 : test de la gestion des etudiants et leurs inscriptions :
 - ajoter étudiant : 
 ![alt text](image.png)
-
-
-La gestion de cache avec redis : 
-
-1️. Mettre à jour le cache directement après modification
-Avantages
-   ✔️ Évite une requête MongoDB après la mise à jour.
-   ✔️ Assure que les nouvelles données sont immédiatement disponibles.
-
-Inconvénients
-   ❌ Il faut trouver et modifier chaque entrée en cache concernée.
-   ❌ Peut devenir compliqué si plusieurs caches stockent les mêmes données (ex: liste des cours + détails d’un cours).
-
-2️. Supprimer le cache après modification
-Avantages
-   ✔️ Plus simple et efficace à gérer.
-   ✔️ Lors de la prochaine requête, les données seront rafraîchies automatiquement avec MongoDB.
-Inconvénients
-   ❌ La prochaine requête sera un peu plus lente (car MongoDB est sollicité).
-   ❌ Si plusieurs utilisateurs font la requête juste après la suppression du cache, ils vont tous interroger MongoDB avant que le cache soit recréé.
-
---> Quelle approche choisir ?
-
-   - Si on modifie un seul élément spécifique, mettre à jour directement le cache est préférable.
-   - Si la modification peut affecter plusieurs données (ex: une liste de cours, des stats, etc.), il vaut mieux supprimer le cache pour éviter des incohérences.
