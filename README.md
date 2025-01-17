@@ -109,3 +109,28 @@ Test 3 : courseController et courseRoutes :
 - Test 4 : test de la gestion des etudiants et leurs inscriptions :
 - ajoter étudiant : 
 ![alt text](image.png)
+
+
+La gestion de cache avec redis : 
+
+1️. Mettre à jour le cache directement après modification
+Avantages
+   ✔️ Évite une requête MongoDB après la mise à jour.
+   ✔️ Assure que les nouvelles données sont immédiatement disponibles.
+
+Inconvénients
+   ❌ Il faut trouver et modifier chaque entrée en cache concernée.
+   ❌ Peut devenir compliqué si plusieurs caches stockent les mêmes données (ex: liste des cours + détails d’un cours).
+
+2️. Supprimer le cache après modification
+Avantages
+   ✔️ Plus simple et efficace à gérer.
+   ✔️ Lors de la prochaine requête, les données seront rafraîchies automatiquement avec MongoDB.
+Inconvénients
+   ❌ La prochaine requête sera un peu plus lente (car MongoDB est sollicité).
+   ❌ Si plusieurs utilisateurs font la requête juste après la suppression du cache, ils vont tous interroger MongoDB avant que le cache soit recréé.
+
+--> Quelle approche choisir ?
+
+   - Si on modifie un seul élément spécifique, mettre à jour directement le cache est préférable.
+   - Si la modification peut affecter plusieurs données (ex: une liste de cours, des stats, etc.), il vaut mieux supprimer le cache pour éviter des incohérences.

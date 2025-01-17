@@ -23,7 +23,21 @@ async function createCourse(req, res) {
 
 async function getCourses(req, res) {
     try {
+        const cacheKey = 'courses:all';
+        const cachedData = await redisService.get(cacheKey);
+
+        if (cachedData) {
+            console.log(" Récupéré depuis le cache");
+            return res.status(200).json(JSON.parse(cachedData));
+        }
+
         const courses = await mongoService.find('courses', {});
+
+        if (!courses.length) {
+            return res.status(404).json({ message: "Aucun cours trouvé" });
+        }
+
+        await redisService.set(cacheKey, JSON.stringify(courses), 3600); // Cache pendant 1h
         res.status(200).json(courses);
     } catch (error) {
         res.status(500).json({ message: "Erreur interne", error: error.message });
@@ -32,12 +46,28 @@ async function getCourses(req, res) {
 
 async function getCourse(req, res) {
     try {
-        const { id } = req.params;
-        const course = await mongoService.findOne('courses', { _id: mongoService.toObjectId(id) });
+        const id = String(req.params.id);
+
+        if (!mongoService.isValidObjectId(id)) {
+            return res.status(400).json({ message: "ID non valide" });
+        }
+
+        const cacheKey = `course:${id}`;
+        const cachedData = await redisService.get(cacheKey);
+
+        if (cachedData) {
+            console.log(" Récupéré depuis le cache");
+            return res.status(200).json(JSON.parse(cachedData));  // Convertir en objet JS
+        }
+
+        const objectId = mongoService.toObjectId(id);
+        const course = await mongoService.findOne('courses', { _id: objectId });
 
         if (!course) {
             return res.status(404).json({ message: "Cours non trouvé" });
         }
+
+        await redisService.set(cacheKey, JSON.stringify(course), 3600); // Cache pendant 1 heure
 
         res.status(200).json(course);
     } catch (error) {
@@ -63,6 +93,9 @@ async function updateCourse(req, res) {
         if (result.modifiedCount === 0) {
             return res.status(404).json({ message: "Cours non trouvé ou aucune modification appliquée" });
         }
+
+         // Mettre à jour le cache
+         await redisService.set(`course:${id}`, JSON.stringify(updatedCourse), 3600);
 
         res.status(200).json({ message: "Cours mis à jour" });
 

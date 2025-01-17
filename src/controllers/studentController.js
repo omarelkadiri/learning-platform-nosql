@@ -76,13 +76,28 @@ async function updateStudent(req, res) {
 
 async function deleteStudent(req, res) {
     try {
-        const { id } = req.params;
-        
-        const result = await mongoService.deleteOne('students', { _id: mongoService.toObjectId(String(id)) });
+        const id = String(req.params.id);
 
-        if (result.deletedCount === 0) {
+        if (!mongoService.isValidObjectId(id)) {
+            return res.status(400).json({ message: "ID non valide" });
+        }
+
+        const cacheKey = `student:${id}`;
+        const cachedData = await redisService.get(cacheKey);
+
+        if (cachedData) {
+            console.log(" Récupéré depuis le cache");
+            return res.status(200).json(JSON.parse(cachedData));
+        }
+
+        const objectId = mongoService.toObjectId(id);
+        const student = await mongoService.findOne('students', { _id: objectId });
+
+        if (!student) {
             return res.status(404).json({ message: "Étudiant non trouvé" });
         }
+
+        await redisService.set(cacheKey, JSON.stringify(student), 3600);
 
         res.status(200).json({ message: "Étudiant supprimé avec succès" });
 
@@ -107,6 +122,9 @@ async function enrollStudent(req, res) {
         const enrollment = { studentId, courseId, enrolledAt: new Date() };
         await mongoService.insertOne('enrollments', enrollment);
 
+        // Effacer le cache pour l'étudiant concerné
+        await redisService.del(`studentCourses:${studentId}`);
+
         res.status(201).json({ message: "Inscription réussie" });
     } catch (error) {
         res.status(500).json({ message: "Erreur interne", error: error.message });
@@ -118,10 +136,25 @@ async function getStudentCourses(req, res) {
     try {
         const { studentId } = req.params;
 
+        const cacheKey = `studentCourses:${studentId}`;
+        const cachedData = await redisService.get(cacheKey);
+
+        if (cachedData) {
+            console.log(" Récupéré depuis le cache");
+            return res.status(200).json(JSON.parse(cachedData));
+        }
+
         const enrollments = await mongoService.find('enrollments', { studentId });
+
+        if (!enrollments.length) {
+            return res.status(404).json({ message: "Aucun cours trouvé pour cet étudiant" });
+        }
+
         const courseIds = enrollments.map(enrollment => mongoService.toObjectId(enrollment.courseId));
 
         const courses = await mongoService.find('courses', { _id: { $in: courseIds } });
+
+        await redisService.set(cacheKey, JSON.stringify(courses), 3600); // Cache pendant 1h
 
         res.status(200).json(courses);
     } catch (error) {
