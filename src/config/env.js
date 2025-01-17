@@ -6,7 +6,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const requiredEnvVars = [
+ requiredEnvVars = [
   'MONGODB_URI',
   'MONGODB_DB_NAME',
   'REDIS_URI'

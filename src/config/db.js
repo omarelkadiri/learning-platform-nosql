@@ -5,6 +5,9 @@
 const { MongoClient } = require('mongodb');
 const redis = require('redis');
 const config = require('./env');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 let mongoClient, redisClient, db;
 
@@ -14,6 +17,13 @@ let mongoClient, redisClient, db;
 async function connectMongo(retries = 5, delay = 5000) {
     if (mongoClient) return db; // Retourne l'instance si déjà connectée
 
+
+    if (!config.mongodb.uri) {
+        console.error("❌ Erreur : L'URI MongoDB est indéfinie. Vérifie ton fichier .env !");
+        process.exit(1);
+    }
+
+    
     try {
         mongoClient = new MongoClient(config.mongodb.uri, {
             useNewUrlParser: true,

@@ -4,7 +4,8 @@
   "description": "Projet NoSQL, ENSET Mohammedia",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/app.js"
+    "start": "nodemon ./src/app.js",
+    "test": "jest --testTimeout=20000"
   },
   "keywords": [
     "MongoDB",
@@ -14,10 +15,17 @@
   "author": "Abdelaziz DAAIF",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.5",
     "redis": "^4.7.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mocha": "^11.0.1",
+    "supertest": "^7.0.0"
   }
 }

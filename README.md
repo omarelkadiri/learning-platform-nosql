@@ -91,3 +91,14 @@
    ## installation : 
       - Installation du driver MongoDB
          npm install mongoose dotenv
+
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+test get 
+![alt text](image-2.png)
+
+test Post 
+![alt text](image-3.png)

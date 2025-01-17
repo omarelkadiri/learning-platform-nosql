@@ -1,30 +1,36 @@
-// Question: Comment organiser le point d'entrée de l'application ?
-// Question: Quelle est la meilleure façon de gérer le démarrage de l'application ?
-
+require('dotenv').config();
 const express = require('express');
-const config = require('./config/env');
-const db = require('./config/db');
-
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { connectMongo } = require('./config/db');
 const courseRoutes = require('./routes/courseRoutes');
-const studentRoutes = require('./routes/studentRoutes');
 
 const app = express();
 
-async function startServer() {
-  try {
-    // TODO: Initialiser les connexions aux bases de données
-    // TODO: Configurer les middlewares Express
-    // TODO: Monter les routes
-    // TODO: Démarrer le serveur
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-}
+// Middleware CORS
+app.use(cors());
 
-// Gestion propre de l'arrêt
-process.on('SIGTERM', async () => {
-  // TODO: Implémenter la fermeture propre des connexions
+// Middleware pour parser le JSON
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Connexion à MongoDB
+connectMongo().then(() => {
+    console.log(' Connecté à MongoDB');
+}).catch(err => {
+    console.error(' Erreur de connexion MongoDB:', err);
 });
 
-startServer();
+// Définition des routes
+app.use('/courses', courseRoutes);
+
+// Route d’accueil
+app.get('/', (req, res) => {
+    res.send('***** API de gestion des cours fonctionne !');
+});
+
+// Port et démarrage du serveur
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`***** Serveur lancé sur http://localhost:${PORT}`);
+});
