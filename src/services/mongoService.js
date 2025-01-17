@@ -27,6 +27,18 @@ async function deleteOne(collectionName, id) {
     return db.collection(collectionName).deleteOne({ _id: new ObjectId(id) });
 }
 
+function toObjectId(id) {
+    if (!ObjectId.isValid(id)) {
+        throw new Error("L'ID fourni n'est pas valide");
+    }
+    
+    try {
+        return new ObjectId(id);
+    } catch (error) {
+        throw new Error(" ID invalide : " + id);
+    }
+}
+
 
 
 module.exports = {
@@ -34,5 +46,6 @@ module.exports = {
     find,
     findById,
     updateOne,
-    deleteOne
+    deleteOne,
+    toObjectId
 };

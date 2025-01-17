@@ -92,13 +92,20 @@
       - Installation du driver MongoDB
          npm install mongoose dotenv
 
+Test 1 : Connection Mongodb et Redis :
+![alt text](image-4.png)
 
-![alt text](image.png)
-
+Test 2 :  MongoService :
 ![alt text](image-1.png)
 
-test get 
+
+Test 3 : courseController et courseRoutes :
+- test get 
 ![alt text](image-2.png)
 
-test Post 
+- test Post 
 ![alt text](image-3.png)
+
+- Test 4 : test de la gestion des etudiants et leurs inscriptions :
+- ajoter étudiant : 
+![alt text](image.png)

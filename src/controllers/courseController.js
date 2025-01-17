@@ -33,7 +33,7 @@ async function getCourses(req, res) {
 async function getCourse(req, res) {
     try {
         const { id } = req.params;
-        const course = await mongoService.findOne('courses', { _id: mongoService.ObjectId(id) });
+        const course = await mongoService.findOne('courses', { _id: mongoService.toObjectId(id) });
 
         if (!course) {
             return res.status(404).json({ message: "Cours non trouvé" });
@@ -58,7 +58,7 @@ async function updateCourse(req, res) {
         if (title) updateFields.title = title;
         if (description) updateFields.description = description;
 
-        const result = await mongoService.updateOne('courses', { _id: mongoService.ObjectId(id) }, { $set: updateFields });
+        const result = await mongoService.updateOne('courses', { _id: mongoService.toObjectId(id) }, { $set: updateFields });
 
         if (result.modifiedCount === 0) {
             return res.status(404).json({ message: "Cours non trouvé ou aucune modification appliquée" });
@@ -74,7 +74,7 @@ async function updateCourse(req, res) {
 async function deleteCourse(req, res) {
     try {
         const { id } = req.params;
-        const result = await mongoService.deleteOne('courses', { _id: mongoService.ObjectId(id) });
+        const result = await mongoService.deleteOne('courses', { _id: mongoService.toObjectId(id) });
 
         if (result.deletedCount === 0) {
             return res.status(404).json({ message: "Cours non trouvé" });

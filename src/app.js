@@ -4,6 +4,9 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { connectMongo } = require('./config/db');
 const courseRoutes = require('./routes/courseRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+const { config } = require('dotenv');
+const { port } = require ('./config/env')
 
 const app = express();
 
@@ -23,6 +26,7 @@ connectMongo().then(() => {
 
 // Définition des routes
 app.use('/courses', courseRoutes);
+app.use('/students', studentRoutes);
 
 // Route d’accueil
 app.get('/', (req, res) => {
@@ -30,7 +34,6 @@ app.get('/', (req, res) => {
 });
 
 // Port et démarrage du serveur
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`***** Serveur lancé sur http://localhost:${PORT}`);
+app.listen(port, () => {
+    console.log(`***** Serveur lancé sur http://localhost:${port}`);
 });
