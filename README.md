@@ -51,34 +51,37 @@ Elle inclut des fonctionnalités telles que :
       - Debian : la commande bash : redis-server
       - Windows : cd C:\Program Files\Redis\64\bin; redis-server --daemonize yes
    
-   
+
    --> Démarer l'API :  npm start
       Si tu utilises Docker, lance directement :  docker-compose up -d
 
 
    ## Endpoints Principaux
 
-   ***** Cours
-   Méthode	Endpoint	          Description
-   POST	   /courses	          Ajouter un cours
-   GET	   /courses/:id       Récupérer un cours spécifique
-   GET	   /courses	          Récupérer tous les cours
-   PUT	   /courses/:id	    Modifier un cours
-   DELETE	/courses/:id	    Supprimer un cours
+API REST : Gestion des Cours et des Étudiants
 
-   ***** Étudiants
-   Méthode	Endpoint    	   Description
-   POST	   /students	      Ajouter un étudiant
-   GET	   /students/:id	   Récupérer un étudiant spécifique
-   GET	   /students	      Récupérer tous les étudiants
-   PUT	   /students/:id	   Modifier un étudiant
-   DELETE	/students/:id	   Supprimer un étudiant
+Cours
 
-   ***** Inscription des Étudiants aux Cours
-   Méthode	Endpoint	            Description
-   POST	   /enrollments	      Inscrire un étudiant à un cours
-   GET	   /students/:studentId/courses	Récupérer les cours d’un étudiant
-   DELETE	/enrollments/:id	   Désinscrire un étudiant d’un cours
+    Ajouter un cours: Envoyer une requête POST à l'endpoint /courses avec les informations du nouveau cours.
+    Récupérer un cours: Effectuer une requête GET à l'endpoint /courses/:id en remplaçant :id par l'identifiant du cours souhaité.
+    Récupérer tous les cours: Envoyer une requête GET à l'endpoint /courses.
+    Modifier un cours: Effectuer une requête PUT à l'endpoint /courses/:id avec les nouvelles informations du cours.
+    Supprimer un cours: Envoyer une requête DELETE à l'endpoint /courses/:id.
+
+Étudiants
+
+    Ajouter un étudiant: Envoyer une requête POST à l'endpoint /students avec les informations du nouvel étudiant.
+    Récupérer un étudiant: Effectuer une requête GET à l'endpoint /students/:id en remplaçant :id par l'identifiant de l'étudiant souhaité.
+    Récupérer tous les étudiants: Envoyer une requête GET à l'endpoint /students.
+    Modifier un étudiant: Effectuer une requête PUT à l'endpoint /students/:id avec les nouvelles informations de l'étudiant.
+    Supprimer un étudiant: Envoyer une requête DELETE à l'endpoint /students/:id.
+
+Inscriptions
+
+    Inscrire un étudiant: Envoyer une requête POST à l'endpoint /enrollments avec les identifiants de l'étudiant et du cours.
+    Récupérer les cours d'un étudiant: Effectuer une requête GET à l'endpoint /students/:studentId/courses en remplaçant :studentId par l'identifiant de l'étudiant.
+    Désinscrire un étudiant: Envoyer une requête DELETE à l'endpoint /enrollments/:id.
+
 
 ## Gestion du Cache avec Redis
 
